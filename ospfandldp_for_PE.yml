@@ -1,0 +1,103 @@
+
+version: '2.0'
+
+ospfandldp_for_PE:
+  description: this is a workflow for configuring ospf and ldp for PE routers
+  
+  type: direct
+  
+  tasks:
+    configure_PE1_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP1 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::5 prefix-length 128
+          - router interface toP1 ipv6
+          - exit
+          - router ldp interface-parameters interface toP1 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP1 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP1 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE2_md
+
+    configure_PE2_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP2 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::6 prefix-length 128
+          - router interface toP2 ipv6
+          - exit
+          - router ldp interface-parameters interface toP2 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP2 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP2 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE3_md
+
+    configure_PE3_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP3 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::7 prefix-length 128
+          - router interface toP3 ipv6
+          - exit
+          - router ldp interface-parameters interface toP3 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP3 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP3 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE4_md
+
+    configure_PE4_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP4 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::8 prefix-length 128
+          - router interface toP4 ipv6
+          - exit
+          - router ldp interface-parameters interface toP4 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP4 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP4 interface-type point-to-point
+          - commit
+      publish:
+        status: done
+    

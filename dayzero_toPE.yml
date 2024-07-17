@@ -1,0 +1,187 @@
+
+version: '2.0'
+
+dayzero_toPE:
+  description: this is a sample dayzero workflow for PE routers
+  
+  type: direct
+  
+  tags:
+    - sample dayzero workflow
+
+  
+  tasks:
+    configure_PE1_classic:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP1 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!classic-cli
+          - configure card 1 card-type "iom-1"
+          - configure card 1 mda 1 mda-type "me6-100gb-qsfp28"
+          - bof static-route 0.0.0.0/1 next-hop 135.86.190.1
+          - bof save
+          - configure system management-interface configuration-mode model-driven
+          - sleep 1
+          
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE1_md
+        
+    configure_PE1_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP1 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - system management-interface cli md-cli auto-config-save
+          - system name <% env().hostname1 %>
+          - port 1/1/c1 admin-state enable connector breakout c1-100g
+          - port 1/1/c1/1 admin-state enable ethernet mode network encap-type null
+          - port 1/1/c2 admin-state enable connector breakout c1-100g
+          - port 1/1/c2/1 admin-state enable ethernet mode network encap-type null
+          - router interface "system" ipv4 primary address <% env().systemIP1 %>
+          - router interface "system" ipv4 primary prefix-length 32
+          - router interface toP1 port 1/1/c1/1 ipv4 primary address <% env().pe1_toP1 %> prefix-length 30
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE2_classic  
+        
+    configure_PE2_classic:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP2 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!classic-cli
+          - configure card 1 card-type "iom-1"
+          - configure card 1 mda 1 mda-type "me6-100gb-qsfp28"
+          - bof static-route 0.0.0.0/1 next-hop 135.86.190.1
+          - bof save
+          - configure system management-interface configuration-mode model-driven
+          - sleep 1
+          
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE2_md
+        
+    configure_PE2_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP2 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - system management-interface cli md-cli auto-config-save
+          - system name <% env().hostname2 %>
+          - port 1/1/c1 admin-state enable connector breakout c1-100g
+          - port 1/1/c1/1 admin-state enable ethernet mode network encap-type null
+          - port 1/1/c2 admin-state enable connector breakout c1-100g
+          - port 1/1/c2/1 admin-state enable ethernet mode network encap-type null
+          - router interface "system" ipv4 primary address <% env().systemIP2 %>
+          - router interface "system" ipv4 primary prefix-length 32
+          - router interface toP2 port 1/1/c1/1 ipv4 primary address <% env().pe2_toP2 %> prefix-length 30
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE3_classic
+    
+    configure_PE3_classic:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP3 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!classic-cli
+          - configure card 1 card-type "iom-1"
+          - configure card 1 mda 1 mda-type "me6-100gb-qsfp28"
+          - bof static-route 0.0.0.0/1 next-hop 135.86.190.1
+          - bof save
+          - configure system management-interface configuration-mode model-driven
+          - sleep 1
+          
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE3_md
+        
+    configure_PE3_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP3 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - system management-interface cli md-cli auto-config-save
+          - system name <% env().hostname3 %>
+          - port 1/1/c1 admin-state enable connector breakout c1-100g
+          - port 1/1/c1/1 admin-state enable ethernet mode network encap-type null
+          - port 1/1/c2 admin-state enable connector breakout c1-100g
+          - port 1/1/c2/1 admin-state enable ethernet mode network encap-type null
+          - router interface "system" ipv4 primary address <% env().systemIP3 %>
+          - router interface "system" ipv4 primary prefix-length 32
+          - router interface toP3 port 1/1/c1/1 ipv4 primary address <% env().pe3_toP3 %> prefix-length 30
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE4_classic
+        
+    configure_PE4_classic:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP4 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!classic-cli
+          - configure card 1 card-type "iom-1"
+          - configure card 1 mda 1 mda-type "me6-100gb-qsfp28"
+          - bof static-route 0.0.0.0/1 next-hop 135.86.190.1
+          - bof save
+          - configure system management-interface configuration-mode model-driven
+          - sleep 1
+          
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_PE4_md
+        
+    configure_PE4_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP4 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - system management-interface cli md-cli auto-config-save
+          - system name <% env().hostname4 %>
+          - port 1/1/c1 admin-state enable connector breakout c1-100g
+          - port 1/1/c1/1 admin-state enable ethernet mode network encap-type null
+          - port 1/1/c2 admin-state enable connector breakout c1-100g
+          - port 1/1/c2/1 admin-state enable ethernet mode network encap-type null
+          - router interface "system" ipv4 primary address <% env().systemIP4 %>
+          - router interface "system" ipv4 primary prefix-length 32
+          - router interface toP4 port 1/1/c1/1 ipv4 primary address <% env().pe4_toP4 %> prefix-length 30
+          - commit
+      publish:
+        status: done
+    

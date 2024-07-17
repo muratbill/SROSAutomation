@@ -1,0 +1,136 @@
+
+version: '2.0'
+
+ospfandldp_for_P:
+  description: this is a workflow for configuring ospf, ospf3 and ldp for P routers
+  
+  type: direct
+  
+  
+
+  tasks:
+    configure_P1_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP1 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::1 prefix-length 128
+          - router interface toP2 ipv6
+          - exit
+          - router interface toP3 ipv6
+          - exit
+          - router interface toPE1 ipv6
+          - exit
+          - router ldp interface-parameters interface toP2 ipv4
+          - exit
+          - router ldp interface-parameters interface toPE1 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP2 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toPE1 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP2 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toPE1 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_P2_md
+
+    configure_P2_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP2 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::2 prefix-length 128
+          - router interface toP1 ipv6
+          - exit
+          - router interface toP4 ipv6
+          - exit
+          - router interface toPE2 ipv6
+          - exit
+          - router ldp interface-parameters interface toP1 ipv4
+          - exit
+          - router ldp interface-parameters interface toPE2 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP1 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toPE2 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP1 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toPE2 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_P3_md
+
+    configure_P3_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP3 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::3 prefix-length 128
+          - router interface toP1 ipv6
+          - exit
+          - router interface toP4 ipv6
+          - exit
+          - router interface toPE3 ipv6
+          - exit
+          - router ldp interface-parameters interface toP4 ipv4
+          - exit
+          - router ldp interface-parameters interface toPE3 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP4 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toPE3 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP4 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toPE3 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_P4_md
+
+    configure_P4_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP4 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router interface system ipv6 address 2001:db8:a:100::4 prefix-length 128
+          - router interface toP2 ipv6
+          - exit
+          - router interface toP3 ipv6
+          - exit
+          - router interface toPE4 ipv6
+          - exit
+          - router ldp interface-parameters interface toP3 ipv4
+          - exit
+          - router ldp interface-parameters interface toPE4 ipv4
+          - exit
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toP3 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toPE4 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toP3 interface-type point-to-point
+          - router ospf3 0 admin-state enable area 0.0.0.0 interface toPE4 interface-type point-to-point
+          - commit
+      publish:
+        status: done

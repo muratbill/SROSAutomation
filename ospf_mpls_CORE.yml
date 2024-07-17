@@ -1,0 +1,88 @@
+
+version: '2.0'
+
+ospf_for_CORE:
+  description: this is a workflow for configuring ospf on mpls core routers
+  
+  type: direct
+  
+  
+
+  tasks:
+    configure_R1_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP1 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR2 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR5 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR4 interface-type point-to-point
+          - - router ospf 0 admin-state enable area 0.0.0.0 interface toR3 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_R2_md
+
+    configure_R2_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP2 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR1 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR6 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR3 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR4 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_R3_md
+
+    configure_R3_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP3 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR4 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR7 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR1 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR2 interface-type point-to-point
+          - commit
+      publish:
+        status: <% task().result %>
+      on-success:
+        - configure_R4_md
+
+    configure_R4_md:
+      action: nsp.sr_cli
+      input:
+        host: '<% env().mgmtIP4 %>'
+        username: <% env().username %>
+        password: <% env().password %>
+        cmd:
+          - /!md-cli
+          - configure private
+          - router ospf 0 admin-state enable area 0.0.0.0 interface system interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR3 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR8 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR1 interface-type point-to-point
+          - router ospf 0 admin-state enable area 0.0.0.0 interface toR2 interface-type point-to-point
+          - commit
+      publish:
+        status: done
